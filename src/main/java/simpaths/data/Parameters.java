@@ -525,6 +525,9 @@ public class Parameters {
     private static MultiKeyCoefficientMap coeffCovarianceHM1Level; //Step 1 coefficients for mental health
     private static MultiKeyCoefficientMap coeffCovarianceHM2LevelMales; //Step 2 coefficients for mental health for males
     private static MultiKeyCoefficientMap coeffCovarianceHM2LevelFemales;
+    private static MultiKeyCoefficientMap coeffCovarianceHM2LevelMalesU25;
+    private static MultiKeyCoefficientMap coeffCovarianceHM2LevelFemalesU25;
+
 
     private static MultiKeyCoefficientMap coeffCovarianceHM1Case;
     private static MultiKeyCoefficientMap coeffCovarianceHM2CaseMales;
@@ -534,10 +537,14 @@ public class Parameters {
     private static MultiKeyCoefficientMap coeffCovarianceDHE_MCS1;
     private static MultiKeyCoefficientMap coeffCovarianceDHE_MCS2Males;
     private static MultiKeyCoefficientMap coeffCovarianceDHE_MCS2Females;
+    private static MultiKeyCoefficientMap coeffCovarianceDHE_MCS2MalesU25;
+    private static MultiKeyCoefficientMap coeffCovarianceDHE_MCS2FemalesU25;
 
     private static MultiKeyCoefficientMap coeffCovarianceDHE_PCS1;
     private static MultiKeyCoefficientMap coeffCovarianceDHE_PCS2Males;
     private static MultiKeyCoefficientMap coeffCovarianceDHE_PCS2Females;
+    private static MultiKeyCoefficientMap coeffCovarianceDHE_PCS2MalesU25;
+    private static MultiKeyCoefficientMap coeffCovarianceDHE_PCS2FemalesU25;
 
     private static MultiKeyCoefficientMap coeffCovarianceDLS1;
     private static MultiKeyCoefficientMap coeffCovarianceDLS2Males;
@@ -757,6 +764,8 @@ public class Parameters {
     private static LinearRegression regHealthHM1Level;
     private static LinearRegression regHealthHM2LevelMales;
     private static LinearRegression regHealthHM2LevelFemales;
+    private static LinearRegression regHealthHM2LevelMalesU25;
+    private static LinearRegression regHealthHM2LevelFemalesU25;
 
     private static OrderedRegression<DhmGhq> regHealthHM1Case;
     private static LinearRegression regHealthHM2CaseMales;
@@ -766,10 +775,14 @@ public class Parameters {
     private static LinearRegression regHealthMCS1;
     private static LinearRegression regHealthMCS2Males;
     private static LinearRegression regHealthMCS2Females;
+    private static LinearRegression regHealthMCS2MalesU25;
+    private static LinearRegression regHealthMCS2FemalesU25;
 
     private static LinearRegression regHealthPCS1;
     private static LinearRegression regHealthPCS2Males;
     private static LinearRegression regHealthPCS2Females;
+    private static LinearRegression regHealthPCS2MalesU25;
+    private static LinearRegression regHealthPCS2FemalesU25;
 
     private static LinearRegression regLifeSatisfaction1;
     private static LinearRegression regLifeSatisfaction2Males;
@@ -1135,20 +1148,28 @@ public class Parameters {
         coeffCovarianceHM1Level = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM1_L", 1);
         coeffCovarianceHM2LevelMales = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM2_Males_L", 1);
         coeffCovarianceHM2LevelFemales = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM2_Females_L", 1);
+        coeffCovarianceHM2LevelMalesU25 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM2_Males_L_U25", 1);
+        coeffCovarianceHM2LevelFemalesU25 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM2_Females_L_U25", 1);
+        
         coeffCovarianceHM1Case = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM1_C", 1);
         coeffCovarianceHM2CaseMales = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM2_Males_C", 1);
         coeffCovarianceHM2CaseFemales = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_mental.xlsx", "HM2_Females_C", 1);
 
         validateRegressors(coeffCovarianceHM2CaseMales, "reg_health_mental.xlsx", "HM2_Males_C");
+        validateRegressors(coeffCovarianceHM2LevelMales, "reg_health_mental.xlsx", "HM2_Males_L");
 
         //Health
         coeffCovarianceDHE_MCS1 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_MCS1", 1);
         coeffCovarianceDHE_MCS2Males = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_MCS2_Males", 1);
         coeffCovarianceDHE_MCS2Females = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_MCS2_Females", 1);
+        coeffCovarianceDHE_MCS2MalesU25 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_MCS2_Males_U25", 1);
+        coeffCovarianceDHE_MCS2FemalesU25 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_MCS2_Females_U25", 1);
 
         coeffCovarianceDHE_PCS1 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_PCS1", 1);
         coeffCovarianceDHE_PCS2Males = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_PCS2_Males", 1);
         coeffCovarianceDHE_PCS2Females = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_PCS2_Females", 1);
+        coeffCovarianceDHE_PCS2MalesU25 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_PCS2_Males_U25", 1);
+        coeffCovarianceDHE_PCS2FemalesU25 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DHE_PCS2_Females_U25", 1);
 
         coeffCovarianceDLS1 = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DLS1", 1);
         coeffCovarianceDLS2Males = ExcelAssistant.loadCoefficientMap(Parameters.getInputDirectory() + "reg_health_wellbeing.xlsx", "DLS2_Males", 1);
@@ -1221,15 +1242,21 @@ public class Parameters {
                     {"coeffCovarianceHM1Level", coeffCovarianceHM1Level},
                     {"coeffCovarianceHM2LevelMales", coeffCovarianceHM2LevelMales},
                     {"coeffCovarianceHM2LevelFemales", coeffCovarianceHM2LevelFemales},
+                    {"coeffCovarianceHM2LevelMalesU25", coeffCovarianceHM2LevelMalesU25},
+                    {"coeffCovarianceHM2LevelFemalesU25", coeffCovarianceHM2LevelFemalesU25},
                     {"coeffCovarianceHM1Case", coeffCovarianceHM1Case},
                     {"coeffCovarianceHM2CaseMales", coeffCovarianceHM2CaseMales},
                     {"coeffCovarianceHM2CaseFemales", coeffCovarianceHM2CaseFemales},
                     {"coeffCovarianceDHE_MCS1", coeffCovarianceDHE_MCS1},
                     {"coeffCovarianceDHE_MCS2Males", coeffCovarianceDHE_MCS2Males},
                     {"coeffCovarianceDHE_MCS2Females", coeffCovarianceDHE_MCS2Females},
+                    {"coeffCovarianceDHE_MCS2MalesU25", coeffCovarianceDHE_MCS2MalesU25},
+                    {"coeffCovarianceDHE_MCS2FemalesU25", coeffCovarianceDHE_MCS2FemalesU25},
                     {"coeffCovarianceDHE_PCS1", coeffCovarianceDHE_PCS1},
                     {"coeffCovarianceDHE_PCS2Males", coeffCovarianceDHE_PCS2Males},
                     {"coeffCovarianceDHE_PCS2Females", coeffCovarianceDHE_PCS2Females},
+                    {"coeffCovarianceDHE_PCS2MalesU25", coeffCovarianceDHE_PCS2MalesU25},
+                    {"coeffCovarianceDHE_PCS2FemalesU25", coeffCovarianceDHE_PCS2FemalesU25},
                     {"coeffCovarianceDLS1", coeffCovarianceDLS1},
                     {"coeffCovarianceDLS2Males", coeffCovarianceDLS2Males},
                     {"coeffCovarianceDLS2Females", coeffCovarianceDLS2Females},
@@ -1315,15 +1342,21 @@ public class Parameters {
             coeffCovarianceHM1Level = bootstrapWithTrace("coeffCovarianceHM1Level", coeffCovarianceHM1Level);
             coeffCovarianceHM2LevelMales = bootstrapWithTrace("coeffCovarianceHM2LevelMales", coeffCovarianceHM2LevelMales);
             coeffCovarianceHM2LevelFemales = bootstrapWithTrace("coeffCovarianceHM2LevelFemales", coeffCovarianceHM2LevelFemales);
+            coeffCovarianceHM2LevelMalesU25 = bootstrapWithTrace("coeffCovarianceHM2LevelMalesU25", coeffCovarianceHM2LevelMalesU25);
+            coeffCovarianceHM2LevelFemalesU25 = bootstrapWithTrace("coeffCovarianceHM2LevelFemalesU25", coeffCovarianceHM2LevelFemalesU25);
             coeffCovarianceHM1Case = bootstrapWithTrace("coeffCovarianceHM1Case", coeffCovarianceHM1Case);
             coeffCovarianceHM2CaseMales = bootstrapWithTrace("coeffCovarianceHM2CaseMales", coeffCovarianceHM2CaseMales);
             coeffCovarianceHM2CaseFemales = bootstrapWithTrace("coeffCovarianceHM2CaseFemales", coeffCovarianceHM2CaseFemales);
             coeffCovarianceDHE_MCS1 = bootstrapWithTrace("coeffCovarianceDHE_MCS1", coeffCovarianceDHE_MCS1);
             coeffCovarianceDHE_MCS2Males = bootstrapWithTrace("coeffCovarianceDHE_MCS2Males", coeffCovarianceDHE_MCS2Males);
             coeffCovarianceDHE_MCS2Females = bootstrapWithTrace("coeffCovarianceDHE_MCS2Females", coeffCovarianceDHE_MCS2Females);
+            coeffCovarianceDHE_MCS2MalesU25 = bootstrapWithTrace("coeffCovarianceDHE_MCS2MalesU25", coeffCovarianceDHE_MCS2MalesU25);
+            coeffCovarianceDHE_MCS2FemalesU25 = bootstrapWithTrace("coeffCovarianceDHE_MCS2FemalesU25", coeffCovarianceDHE_MCS2FemalesU25);
             coeffCovarianceDHE_PCS1 = bootstrapWithTrace("coeffCovarianceDHE_PCS1", coeffCovarianceDHE_PCS1);
             coeffCovarianceDHE_PCS2Males = bootstrapWithTrace("coeffCovarianceDHE_PCS2Males", coeffCovarianceDHE_PCS2Males);
             coeffCovarianceDHE_PCS2Females = bootstrapWithTrace("coeffCovarianceDHE_PCS2Females", coeffCovarianceDHE_PCS2Females);
+            coeffCovarianceDHE_PCS2MalesU25 = bootstrapWithTrace("coeffCovarianceDHE_PCS2MalesU25", coeffCovarianceDHE_PCS2MalesU25);
+            coeffCovarianceDHE_PCS2FemalesU25 = bootstrapWithTrace("coeffCovarianceDHE_PCS2FemalesU25", coeffCovarianceDHE_PCS2FemalesU25);
             coeffCovarianceDLS1 = bootstrapWithTrace("coeffCovarianceDLS1", coeffCovarianceDLS1);
             coeffCovarianceDLS2Males = bootstrapWithTrace("coeffCovarianceDLS2Males", coeffCovarianceDLS2Males);
             coeffCovarianceDLS2Females = bootstrapWithTrace("coeffCovarianceDLS2Females", coeffCovarianceDLS2Females);
@@ -1452,6 +1485,8 @@ public class Parameters {
         regHealthHM1Level = new LinearRegression(coeffCovarianceHM1Level);
         regHealthHM2LevelMales = new LinearRegression(coeffCovarianceHM2LevelMales);
         regHealthHM2LevelFemales = new LinearRegression(coeffCovarianceHM2LevelFemales);
+        regHealthHM2LevelMalesU25 = new LinearRegression(coeffCovarianceHM2LevelMalesU25);
+        regHealthHM2LevelFemalesU25 = new LinearRegression(coeffCovarianceHM2LevelFemalesU25);
 
         regHealthHM1Case = new OrderedRegression<>(RegressionType.OrderedLogit,DhmGhq.class,coeffCovarianceHM1Case);
         regHealthHM2CaseMales = new LinearRegression(coeffCovarianceHM2CaseMales);
@@ -1461,9 +1496,13 @@ public class Parameters {
         regHealthMCS1 = new LinearRegression(coeffCovarianceDHE_MCS1);
         regHealthMCS2Males = new LinearRegression(coeffCovarianceDHE_MCS2Males);
         regHealthMCS2Females = new LinearRegression(coeffCovarianceDHE_MCS2Females);
+        regHealthMCS2MalesU25 = new LinearRegression(coeffCovarianceDHE_MCS2MalesU25);
+        regHealthMCS2FemalesU25 = new LinearRegression(coeffCovarianceDHE_MCS2FemalesU25);
         regHealthPCS1 = new LinearRegression(coeffCovarianceDHE_PCS1);
         regHealthPCS2Males = new LinearRegression(coeffCovarianceDHE_PCS2Males);
         regHealthPCS2Females = new LinearRegression(coeffCovarianceDHE_PCS2Females);
+        regHealthPCS2MalesU25 = new LinearRegression(coeffCovarianceDHE_PCS2MalesU25);
+        regHealthPCS2FemalesU25 = new LinearRegression(coeffCovarianceDHE_PCS2FemalesU25);
         regLifeSatisfaction1 = new LinearRegression(coeffCovarianceDLS1);
         regLifeSatisfaction2Males = new LinearRegression(coeffCovarianceDLS2Males);
         regLifeSatisfaction2Females = new LinearRegression(coeffCovarianceDLS2Females);
@@ -1973,6 +2012,8 @@ public class Parameters {
     public static LinearRegression getRegHealthHM1Level() { return regHealthHM1Level; }
     public static LinearRegression getRegHealthHM2LevelMales() { return regHealthHM2LevelMales; }
     public static LinearRegression getRegHealthHM2LevelFemales() { return regHealthHM2LevelFemales; }
+    public static LinearRegression getRegHealthHM2LevelMalesU25() { return regHealthHM2LevelMalesU25; }
+    public static LinearRegression getRegHealthHM2LevelFemalesU25() { return regHealthHM2LevelFemalesU25; }
     public static OrderedRegression<DhmGhq> getRegHealthHM1Case() {return regHealthHM1Case;}
     public static LinearRegression getRegHealthHM2CaseMales() {return regHealthHM2CaseMales;}
     public static LinearRegression getRegHealthHM2CaseFemales() {return regHealthHM2CaseFemales;}
@@ -1980,10 +2021,14 @@ public class Parameters {
     public static LinearRegression getRegHealthMCS1() { return regHealthMCS1; }
     public static LinearRegression getRegHealthMCS2Males() { return regHealthMCS2Males;   }
     public static LinearRegression getRegHealthMCS2Females() { return regHealthMCS2Females; }
+    public static LinearRegression getRegHealthMCS2MalesU25() { return regHealthMCS2MalesU25;   }
+    public static LinearRegression getRegHealthMCS2FemalesU25() { return regHealthMCS2FemalesU25; }
 
     public static LinearRegression getRegHealthPCS1() { return regHealthPCS1; }
     public static LinearRegression getRegHealthPCS2Males() { return regHealthPCS2Males; }
     public static LinearRegression getRegHealthPCS2Females() { return regHealthPCS2Females; }
+    public static LinearRegression getRegHealthPCS2MalesU25() { return regHealthPCS2MalesU25; }
+    public static LinearRegression getRegHealthPCS2FemalesU25() { return regHealthPCS2FemalesU25; }
 
     public static LinearRegression getRegLifeSatisfaction1() { return regLifeSatisfaction1; }
     public static LinearRegression getRegLifeSatisfaction2Males() { return regLifeSatisfaction2Males; }
