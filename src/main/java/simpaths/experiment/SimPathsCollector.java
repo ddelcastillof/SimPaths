@@ -75,7 +75,7 @@ public class SimPathsCollector extends AbstractSimulationCollectorManager implem
     @GUIparameter(description="Toggle to turn export to .csv files on/off")
     private boolean exportToCSV = true;
 
-    private boolean persistWealthValidationStatistics = true;
+    private boolean persistWealthValidationStatistics = false;
 
     @GUIparameter(description="Toggle to turn persistence of statistics on/off")
     private boolean persistWealthIncomeStatistics = true;
@@ -452,7 +452,8 @@ public class SimPathsCollector extends AbstractSimulationCollectorManager implem
 
         public void update() {
             var filtered = new FilteredCollection<>(model::getPersons, Filters.isEmployed());
-            var income_cs = new CrossSection<>(filtered, Person::getCovidYLabGross);
+            //var income_cs = new CrossSection<>(filtered, Person::getCovidYLabGross);
+            var income_cs = new CrossSection<>(filtered, Person::getGrossEarningsYearly);
             var income_stats = new Stats(income_cs.get()).descrStats();
 
             wealthIncomeStats.setEmployedEarningsP20(income_stats.getPercentile(20.0));
