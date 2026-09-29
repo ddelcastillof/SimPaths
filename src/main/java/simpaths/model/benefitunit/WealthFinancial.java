@@ -19,9 +19,9 @@ public class WealthFinancial {
     private UnsecuredDebtState unsecuredDebtState;
 
 
-    /******************************************************
-     * CONSTRUCTORS
-     ******************************************************/
+    ////////////////////////////////////////////////////////
+    // CONSTRUCTORS
+    ////////////////////////////////////////////////////////
 
     public WealthFinancial() {
         wealthFinancialAssetsValue = 0.0;
@@ -57,9 +57,9 @@ public class WealthFinancial {
     }
 
 
-    /******************************************************
-     * UTILITY METHODS
-     ******************************************************/
+    ////////////////////////////////////////////////////////
+    // UTILITY METHODS
+    ////////////////////////////////////////////////////////
 
     public double projectIncomeAnnual(int year) {
         // projects returns - see BenefitUnit.setInvestmentIncomeAnnual()
@@ -163,34 +163,6 @@ public class WealthFinancial {
         }
     }
 
-    /*
-
-    private static final class CounterfactualDebtStateSource implements IDoubleSource {
-
-        private final BenefitUnit benefitUnit;
-        private final UnsecuredDebtState assumedLagState;
-
-        private CounterfactualDebtStateSource(BenefitUnit benefitUnit, UnsecuredDebtState assumedLagState) {
-            this.benefitUnit = benefitUnit;
-            this.assumedLagState = assumedLagState;
-        }
-
-        @Override
-        public double getDoubleValue(Enum<?> variableID) {
-            if (BenefitUnit.Variables.LagUnsecuredDebtLowCostOnly.equals(variableID)) {
-                return UnsecuredDebtState.LowCostOnly.equals(assumedLagState) ? 1.0 : 0.0;
-            }
-            if (BenefitUnit.Variables.LagUnsecuredDebtHighCostOnly.equals(variableID)) {
-                return UnsecuredDebtState.HighCostOnly.equals(assumedLagState) ? 1.0 : 0.0;
-            }
-            if (BenefitUnit.Variables.LagUnsecuredDebtMixed.equals(variableID)) {
-                return UnsecuredDebtState.Mixed.equals(assumedLagState) ? 1.0 : 0.0;
-            }
-            return benefitUnit.getDoubleValue(variableID);
-        }
-    }
-
-     */
     private double getInnovation(String regression, double randomDraw) {
         double rmse = Parameters.getRMSEForRegression(regression);
         double gauss = Parameters.getStandardNormalDistribution().inverseCumulativeProbability(randomDraw);

@@ -7,7 +7,6 @@ import microsim.engine.SimulationEngine;
 import microsim.event.EventListener;
 import microsim.statistics.IDoubleSource;
 import microsim.statistics.IIntSource;
-import microsim.statistics.Series;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.logging.log4j.LogManager;
@@ -816,15 +815,11 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         Update,
         UpdateOutputVariables,
         UpdatePotentialHourlyEarnings,      //Needed to union matching and labour supply
-        Test,
     }
 
     @Override
     public void onEvent(Enum<?> type) {
         switch ((Processes) type) {
-            case Test -> {
-                test();
-            }
             case Aging -> {
                 aging();
             }
@@ -942,11 +937,6 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
     // ---------------------------------------------------------------------
     // Processes
     // ---------------------------------------------------------------------
-
-    public void test() {
-        if (labC4 == null)
-            throw new RuntimeException("labC4 is null for person " + key.getId());
-    }
 
     public void fertility() {
         fertility(model.getFertilityAdjustment());

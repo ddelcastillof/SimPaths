@@ -127,9 +127,4 @@ public class Filters {
                 .ageRange(Parameters.MIN_AGE_FLEXIBLE_LABOUR_SUPPLY, Parameters.MAX_AGE_FLEXIBLE_LABOUR_SUPPLY)
                 .and(toExclude.negate());
     }
-
-    /// Filter persons who are "employed".
-    public static Predicate<Person> isEmployed() {
-        return p -> p.getLabC4() == Les_c4.EmployedOrSelfEmployed;
-    }
 }

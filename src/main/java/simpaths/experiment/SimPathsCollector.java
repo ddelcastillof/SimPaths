@@ -15,6 +15,7 @@ import simpaths.data.statistics.HealthStatistics;
 import simpaths.data.statistics.WellbeingByGender;
 import simpaths.model.BenefitUnit;
 import simpaths.model.SimPathsModel;
+import simpaths.model.enums.Les_c4;
 import simpaths.model.enums.Quintiles;
 // import plug-in packages
 import org.apache.commons.math3.util.Pair;
@@ -451,7 +452,7 @@ public class SimPathsCollector extends AbstractSimulationCollectorManager implem
         final SimPathsModel model = (SimPathsModel) getManager();
 
         public void update() {
-            var filtered = new FilteredCollection<>(model::getPersons, Filters.isEmployed());
+            var filtered = new FilteredCollection<>(model::getPersons, Filters.employment(Les_c4.EmployedOrSelfEmployed));
             //var income_cs = new CrossSection<>(filtered, Person::getCovidYLabGross);
             var income_cs = new CrossSection<>(filtered, Person::getGrossEarningsYearly);
             var income_stats = new Stats(income_cs.get()).descrStats();
