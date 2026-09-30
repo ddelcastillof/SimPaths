@@ -1,6 +1,7 @@
 package simpaths.data;
 
 import microsim.data.MultiKeyCoefficientMap;
+import org.apache.commons.math3.util.FastMath;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -33,11 +34,11 @@ class ParametersTest {
     @Test
     void asinhHandlesLargeNegativeValues() {
 
-        double val = Parameters.asinh(-4.848628049616065E8);
+        double val = FastMath.asinh(-4.848628049616065E8);
 
         assertTrue(Double.isFinite(val));
         assertTrue(val < 0.0);
         assertEquals(-20.692523713076813, val, 1.0e-12);
-        assertEquals(-Parameters.asinh(4.848628049616065E8), val, 1.0e-12);
+        assertEquals(-FastMath.asinh(4.848628049616065E8), val, 1.0e-12);
     }
 }

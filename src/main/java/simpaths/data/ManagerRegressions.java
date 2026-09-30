@@ -432,7 +432,6 @@ public class ManagerRegressions {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public static double getProbability(IDoubleSource obj, RegressionName regression) {
 
         if (!RegressionType.Logit.equals(regression.getType()) && !RegressionType.Probit.equals(regression.getType()))

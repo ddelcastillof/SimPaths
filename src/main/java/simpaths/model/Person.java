@@ -9,6 +9,7 @@ import microsim.statistics.IDoubleSource;
 import microsim.statistics.IIntSource;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -2156,7 +2157,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
             // "ihs" in instructions -> Use Asinh
             pensionIncMonth = setIncomeBySource(score, rmse, IncomeSource.PrivatePension, RegressionScoreType.Asinh);
         }
-        yPensPersGrossMonth = Parameters.asinh(pensionIncMonth);
+        yPensPersGrossMonth = FastMath.asinh(pensionIncMonth);
     }
 
 
@@ -2189,7 +2190,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
                 pensionIncMonth = setIncomeBySource(score, rmse, IncomeSource.PrivatePension, RegressionScoreType.Asinh);
             }
         }
-        yPensPersGrossMonth = Parameters.asinh(pensionIncMonth);
+        yPensPersGrossMonth = FastMath.asinh(pensionIncMonth);
     }
 
 
@@ -2234,7 +2235,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
 
                 // Calculate level and assign
                 double capinclevel = setIncomeBySource(score, rmse, IncomeSource.CapitalIncome, RegressionScoreType.Asinh);
-                yCapitalPersMonth = Parameters.asinh(capinclevel);
+                yCapitalPersMonth = FastMath.asinh(capinclevel);
             }
         }
     }
@@ -2247,7 +2248,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
 
         //Multiplied by the capital income multiplier, defined as chosen savings rate divided by the long-term average (specified in Parameters class)
         double yptciihs_dv_tmp_level = Math.sinh(yCapitalPersMonth) + Math.sinh(yPensPersGrossMonth);
-        yMiscPersGrossMonth = Parameters.asinh(yptciihs_dv_tmp_level); //Non-employment non-benefit income is the sum of capital income and, for retired individuals, pension income.
+        yMiscPersGrossMonth = FastMath.asinh(yptciihs_dv_tmp_level); //Non-employment non-benefit income is the sum of capital income and, for retired individuals, pension income.
         if (yMiscPersGrossMonth > 13.0) {
             yMiscPersGrossMonth = 13.5;
         }
@@ -4153,14 +4154,14 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
                 return (partner.getHoursFormalSocialCare() + partner.getCareHrsInformalWeek() > 0.01) ? 1. : 0.;
             }
             case HrsReceivedInformalIHS_L1 -> {
-                return Parameters.asinh(getCareHrsInformalWeekL1());
+                return FastMath.asinh(getCareHrsInformalWeekL1());
             }
             case HrsReceivedFormalIHS_L1 -> {
-                return Parameters.asinh(getCareHrsFormalWeekL1());
+                return FastMath.asinh(getCareHrsFormalWeekL1());
             }
             case HrsProvidedInformalIHS_L1 -> {
                 double hours = (careHrsProvidedWeekL1 != null && careHrsProvidedWeekL1 > 0.0) ? careHrsProvidedWeekL1 : 0.0;
-                return Parameters.asinh(hours);
+                return FastMath.asinh(hours);
             }
             case CareMarketMixed -> {
                 return (getHoursFormalSocialCare() > 0.01 && getCareHrsInformalWeek() > 0.01) ? 1. : 0.;
@@ -4683,7 +4684,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
                 return (privatePension.getContRateOPEe() > 0.045 && privatePension.getContRateOPEe() < 0.055) ? 1.0 : 0.0;
             }
             case Asinhop_empee -> {
-                return Parameters.asinh(privatePension.getContRateOPEe() * 100.0);
+                return FastMath.asinh(privatePension.getContRateOPEe() * 100.0);
             }
             case Dhhtp_c8_4_L1 -> {
                 // Couple with children, spouse employed
@@ -6189,14 +6190,14 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
             // Pre-existing enum values used in estimation files (missing cases)
             // -----------------------------------------------------------------------
             case careHrsFormalIhsL1 -> {
-                return Parameters.asinh(getCareHrsFormalWeekL1());
+                return FastMath.asinh(getCareHrsFormalWeekL1());
             }
             case careHrsInformalIhsL1 -> {
-                return Parameters.asinh(getCareHrsInformalWeekL1());
+                return FastMath.asinh(getCareHrsInformalWeekL1());
             }
             case careHrsProvidedWeekIhsL1 -> {
                 double hrs = (careHrsProvidedWeekL1 != null && careHrsProvidedWeekL1 > 0.0) ? careHrsProvidedWeekL1 : 0.0;
-                return Parameters.asinh(hrs);
+                return FastMath.asinh(hrs);
             }
             case careMarketMixedPartner -> {
                 Person partner = getPartner();

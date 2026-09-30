@@ -5,6 +5,7 @@ import java.util.*;
 import jakarta.persistence.*;
 
 import microsim.data.db.PanelEntityKey;
+import org.apache.commons.math3.util.FastMath;
 import org.hibernate.annotations.Fetch;
 import simpaths.data.filters.Filters;
 import simpaths.data.ManagerRegressions;
@@ -2700,7 +2701,7 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
                 if (wealthNonPensionL1==null)
                     throw new IllegalArgumentException("wealthNonPensionL1 not initialised prior to request for AsinhLagMortgageDebtToAnnualPrivateIncome");
                 double annualPrivateIncome = Math.max(1.0, Objects.requireNonNullElse(yGrossMonth, 0.0) * 12.0);
-                return Parameters.asinh(wealthNonPensionL1.getWealthMortgageDebtValue() / annualPrivateIncome);
+                return FastMath.asinh(wealthNonPensionL1.getWealthMortgageDebtValue() / annualPrivateIncome);
             }
             case AsinhLagMortgageDebtToLagAnnualPrivateIncome -> {
                 if (wealthNonPensionL1 == null)
@@ -2708,30 +2709,30 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
                 if (i_yWealthPrivateIncomeMonthL1 == null)
                     throw new IllegalArgumentException("lagged benefit-unit private income not initialised prior to request for AsinhLagMortgageDebtToLagAnnualPrivateIncome");
                 double lagAnnualPrivateIncome = Math.max(1.0, i_yWealthPrivateIncomeMonthL1 * 12.0);
-                return Parameters.asinh(wealthNonPensionL1.getWealthMortgageDebtValue() / lagAnnualPrivateIncome);
+                return FastMath.asinh(wealthNonPensionL1.getWealthMortgageDebtValue() / lagAnnualPrivateIncome);
             }
             case AsinhLagHighCostDebt -> {
                 if (wealthNonPensionL1 == null)
                     throw new IllegalArgumentException("wealthNonPensionL1 not initialised prior to request for AsinhLagHighCostDebt");
-                return Parameters.asinh(wealthNonPensionL1.getWealthFinancial().getWealthUnsecuredDebtHighValue());
+                return FastMath.asinh(wealthNonPensionL1.getWealthFinancial().getWealthUnsecuredDebtHighValue());
             }
             case AsinhNetFinancialWealth -> {
                 if (wealthNonPension != null) {
-                    return Parameters.asinh(wealthNonPension.getWealthFinancial().getValue());
+                    return FastMath.asinh(wealthNonPension.getWealthFinancial().getValue());
                 } else {
                     return 0.0;
                 }
             }
             case AsinhNetHousingWealth -> {
                 if (wealthNonPension != null) {
-                    return Parameters.asinh(wealthNonPension.getWealthHousing().getWealthNetHousing());
+                    return FastMath.asinh(wealthNonPension.getWealthHousing().getWealthNetHousing());
                 } else {
                     return 0.0;
                 }
             }
             case AsinhNetNonPensionWealth -> {
                 if (wealthNonPension != null) {
-                    return Parameters.asinh(wealthNonPension.getWealthNonPensionValueDirect());
+                    return FastMath.asinh(wealthNonPension.getWealthNonPensionValueDirect());
                 } else {
                     return 0.0;
                 }
@@ -5173,9 +5174,9 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
                 Person female = getFemale();
                 double val;
                 if (Occupancy.Couple.equals(occupancy)) {
-                    val = Parameters.asinh(yPensionAnnual / 12.0 / 2.0);
+                    val = FastMath.asinh(yPensionAnnual / 12.0 / 2.0);
                 } else {
-                    val = Parameters.asinh(yPensionAnnual / 12.0);
+                    val = FastMath.asinh(yPensionAnnual / 12.0);
                 }
                 if (male != null) {
                     male.setYPensPersGrossMonth(val);
@@ -5267,14 +5268,14 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
         Person male = getMale();
         Person female = getFemale();
         if (Occupancy.Couple.equals(occupancy)) {
-            val = Parameters.asinh(incomeAnnual / 12.0 / 2.0);
+            val = FastMath.asinh(incomeAnnual / 12.0 / 2.0);
             male.setyCapitalPersMonth(val);
             female.setyCapitalPersMonth(val);
         } else if (Occupancy.Single_Male.equals(occupancy)) {
-            val = Parameters.asinh(incomeAnnual / 12.0);
+            val = FastMath.asinh(incomeAnnual / 12.0);
             male.setyCapitalPersMonth(val);
         } else {
-            val = Parameters.asinh(incomeAnnual / 12.0);
+            val = FastMath.asinh(incomeAnnual / 12.0);
             female.setyCapitalPersMonth(val);
         }
     }

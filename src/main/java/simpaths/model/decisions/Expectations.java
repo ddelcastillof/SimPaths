@@ -3,6 +3,7 @@ package simpaths.model.decisions;
 import java.security.InvalidParameterException;
 import java.util.Map;
 
+import org.apache.commons.math3.util.FastMath;
 import simpaths.data.ManagerRegressions;
 import simpaths.data.Parameters;
 import simpaths.data.RegressionName;
@@ -12,8 +13,6 @@ import simpaths.model.Person;
 import simpaths.model.TaxEvaluation;
 import simpaths.model.taxes.Match;
 import simpaths.model.taxes.Matches;
-
-import static simpaths.data.Parameters.asinh;
 
 
 /**
@@ -369,11 +368,11 @@ public class Expectations {
             personProxyNextPeriod.setLabC4L1(currentStates.getLesCode(emp1Pr));
             personProxyNextPeriod.setLabStatusPartnerAndOwnC4L1(currentStates.getLesC4Code(emp1Pr, emp2Pr));
             personProxyNextPeriod.setYNonBenPersGrossMonthL1(
-                    asinh(labourIncome1Weekly*Parameters.WEEKS_PER_MONTH + (investmentIncome1Annual + pensionIncome1Annual) / 12.0));
+                    FastMath.asinh(labourIncome1Weekly*Parameters.WEEKS_PER_MONTH + (investmentIncome1Annual + pensionIncome1Annual) / 12.0));
             if (cohabitation) {
                 personProxyNextPeriod.setYPersAndPartnerGrossDiffMonthL1(
-                        asinh(labourIncome1Weekly*Parameters.WEEKS_PER_MONTH + (investmentIncome1Annual + pensionIncome1Annual) / 12.0) -
-                                asinh(labourIncome2Weekly*Parameters.WEEKS_PER_MONTH + (investmentIncome2Annual + pensionIncome2Annual) / 12.0) );
+                        FastMath.asinh(labourIncome1Weekly*Parameters.WEEKS_PER_MONTH + (investmentIncome1Annual + pensionIncome1Annual) / 12.0) -
+                                FastMath.asinh(labourIncome2Weekly*Parameters.WEEKS_PER_MONTH + (investmentIncome2Annual + pensionIncome2Annual) / 12.0) );
             } else {
                 personProxyNextPeriod.setYPersAndPartnerGrossDiffMonthL1(0.0);
             }

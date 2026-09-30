@@ -8,6 +8,7 @@ import microsim.data.excel.ExcelAssistant;
 import microsim.statistics.regression.*;
 // import plug-in packages
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.math3.util.FastMath;
 import simpaths.data.startingpop.DataParser;
 import simpaths.model.decisions.DecisionParams;
 import simpaths.model.utilities.AnnuityRates;
@@ -3325,13 +3326,6 @@ public class Parameters {
     public static void setDonorPool(List<DonorTaxUnit> list) {
         donorPool = list;
     }
-    public static double asinh(double xx) {
-        double abs = Math.abs(xx);
-        double val = (abs > 1.0e154) ?
-                Math.log(abs) + Math.log(2.0) :
-                Math.log(abs + Math.hypot(abs, 1.0));
-        return (xx < 0.0) ? -val : val;
-    }
     public static void setMdDualIncome(MahalanobisDistance md) {
         mdDualIncome = md;
     }
@@ -3371,7 +3365,8 @@ public class Parameters {
             infAdj = getTimeSeriesValue(targetPriceYear, TimeSeriesVariable.Inflation) / getTimeSeriesValue(currentPriceYear, TimeSeriesVariable.Inflation);
         if (currentWagesYear != targetWagesYear)
             infAdj *= getTimeSeriesValue(targetWagesYear, TimeSeriesVariable.WageGrowth) / getTimeSeriesValue(currentWagesYear, TimeSeriesVariable.WageGrowth);
-        return asinh(monthlyFinancial * infAdj);
+        return FastMath.asinh(monthlyFinancial * infAdj);
+
     }
     public static void setTrainingFlag(boolean flag) {
         trainingFlag = flag;

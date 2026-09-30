@@ -1,5 +1,6 @@
 package simpaths.model.benefitunit;
 
+import org.apache.commons.math3.util.FastMath;
 import org.junit.jupiter.api.Test;
 import simpaths.data.Parameters;
 import simpaths.model.BenefitUnit;
@@ -25,13 +26,13 @@ class LaggedMortgageIncomeRegressorTest {
         UpdateManager.applyAnnotations(benefitUnit);
 
         Person adult = benefitUnit.getFemale();
-        adult.setYEmpPersGrossMonth(Parameters.asinh(10_000.0));
+        adult.setYEmpPersGrossMonth(FastMath.asinh(10_000.0));
         module.assignMortgageIncomeQuintiles(List.of(benefitUnit));
 
         assertEquals(1_000.0, benefitUnit.getWealthPrivateIncomeMonthlyL1(), 1.0e-10);
         assertEquals(10_000.0, benefitUnit.getWealthPrivateIncomeMonthly(), 1.0e-10);
         assertEquals(
-                Parameters.asinh(120_000.0 / 12_000.0),
+                FastMath.asinh(120_000.0 / 12_000.0),
                 benefitUnit.getDoubleValue(
                         BenefitUnit.Variables.AsinhLagMortgageDebtToLagAnnualPrivateIncome),
                 1.0e-10);
@@ -40,12 +41,12 @@ class LaggedMortgageIncomeRegressorTest {
                 new WealthNonPension(80_000.0, 140_000.0, 60_000.0,
                         0.0, 0.0, 0.0));
         UpdateManager.applyAnnotations(benefitUnit);
-        adult.setYEmpPersGrossMonth(Parameters.asinh(20_000.0));
+        adult.setYEmpPersGrossMonth(FastMath.asinh(20_000.0));
         module.assignMortgageIncomeQuintiles(List.of(benefitUnit));
 
         assertEquals(10_000.0, benefitUnit.getWealthPrivateIncomeMonthlyL1(), 1.0e-10);
         assertEquals(
-                Parameters.asinh(60_000.0 / 120_000.0),
+                FastMath.asinh(60_000.0 / 120_000.0),
                 benefitUnit.getDoubleValue(
                         BenefitUnit.Variables.AsinhLagMortgageDebtToLagAnnualPrivateIncome),
                 1.0e-10);
@@ -63,7 +64,7 @@ class LaggedMortgageIncomeRegressorTest {
         UpdateManager.applyAnnotations(benefitUnit);
 
         assertEquals(
-                Parameters.asinh(10.0),
+                FastMath.asinh(10.0),
                 benefitUnit.getDoubleValue(
                         BenefitUnit.Variables.AsinhLagMortgageDebtToLagAnnualPrivateIncome),
                 1.0e-10);
@@ -74,9 +75,9 @@ class LaggedMortgageIncomeRegressorTest {
         Person adult = new Person(1_000L + id);
         adult.setDemMaleFlag(Gender.Female);
         adult.setDemAge(40);
-        adult.setYEmpPersGrossMonth(Parameters.asinh(earningsMonthly));
-        adult.setYPensPersGrossMonth(Parameters.asinh(0.0));
-        adult.setyCapitalPersMonth(Parameters.asinh(0.0));
+        adult.setYEmpPersGrossMonth(FastMath.asinh(earningsMonthly));
+        adult.setYPensPersGrossMonth(FastMath.asinh(0.0));
+        adult.setyCapitalPersMonth(FastMath.asinh(0.0));
         adult.setWgt(1.0);
         benefitUnit.getMembers().add(adult);
         return benefitUnit;

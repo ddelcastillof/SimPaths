@@ -1,6 +1,7 @@
 package simpaths.model.benefitunit;
 
 import microsim.statistics.IDoubleSource;
+import org.apache.commons.math3.util.FastMath;
 import simpaths.data.ManagerRegressions;
 import simpaths.data.Parameters;
 import simpaths.data.RegressionName;
@@ -117,7 +118,7 @@ public class WealthNonPension {
         if (wealthHousing.isHomeOwner()) {
             double score = ManagerRegressions.getLinearRegression(RegressionName.WealthHousingHW1c)
                     .getScore(zeroPersistenceSource, BenefitUnit.Variables.class);
-            housingRawResidual = Parameters.asinh(wealthHousing.getWealthNetHousing()) - score;
+            housingRawResidual = FastMath.asinh(wealthHousing.getWealthNetHousing()) - score;
             housingStoredResidual = policy.applyHousingCap(
                     housingRawResidual, ManagerRegressions.getRmse(RegressionName.WealthHousingHW1c));
             wealthHousing.setWealthNetInnovation(housingStoredResidual);
@@ -141,7 +142,7 @@ public class WealthNonPension {
         if (wealthFinancial.hasHighCostDebt()) {
             double score = ManagerRegressions.getLinearRegression(RegressionName.WealthFinancialFW2c)
                     .getScore(zeroPersistenceSource, BenefitUnit.Variables.class);
-            double residual = Parameters.asinh(wealthFinancial.getWealthUnsecuredDebtHighValue()) - score;
+            double residual = FastMath.asinh(wealthFinancial.getWealthUnsecuredDebtHighValue()) - score;
             wealthFinancial.setWealthUnsecuredDebtHighInnovation(residual);
             highCostDebtInitialized = true;
         }

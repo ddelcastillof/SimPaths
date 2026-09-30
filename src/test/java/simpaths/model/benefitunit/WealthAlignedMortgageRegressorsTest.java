@@ -1,5 +1,6 @@
 package simpaths.model.benefitunit;
 
+import org.apache.commons.math3.util.FastMath;
 import org.junit.jupiter.api.Test;
 import simpaths.data.Parameters;
 import simpaths.model.BenefitUnit;
@@ -63,9 +64,9 @@ class WealthAlignedMortgageRegressorsTest {
         Person person = new Person(id);
         person.setDemMaleFlag(gender);
         person.setDemAge(age);
-        person.setYEmpPersGrossMonth(Parameters.asinh(earnings));
-        person.setYPensPersGrossMonth(Parameters.asinh(pensionIncome));
-        person.setyCapitalPersMonth(Parameters.asinh(capitalIncome));
+        person.setYEmpPersGrossMonth(FastMath.asinh(earnings));
+        person.setYPensPersGrossMonth(FastMath.asinh(pensionIncome));
+        person.setyCapitalPersMonth(FastMath.asinh(capitalIncome));
         person.setWgt(weight);
         benefitUnit.getMembers().add(person);
     }

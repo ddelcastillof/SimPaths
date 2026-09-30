@@ -2,6 +2,7 @@ package simpaths.model.benefitunit;
 
 import microsim.data.MultiKeyCoefficientMap;
 import microsim.statistics.regression.LinearRegression;
+import org.apache.commons.math3.util.FastMath;
 import org.junit.jupiter.api.Test;
 import simpaths.data.Parameters;
 import simpaths.model.BenefitUnit;
@@ -47,9 +48,9 @@ class WealthNonPensionResidualInitializationTest {
             WealthNonPension.ResidualInitializationResult result =
                     wealth.initializeResidualStates(benefitUnit, policy);
 
-            double expectedHousingResidual = Parameters.asinh(10.0) - 0.5;
+            double expectedHousingResidual = FastMath.asinh(10.0) - 0.5;
             double expectedMortgageResidual = Math.log(4.0) - 0.25;
-            double expectedHighCostDebtResidual = Parameters.asinh(3.0) - 0.4;
+            double expectedHighCostDebtResidual = FastMath.asinh(3.0) - 0.4;
 
             assertTrue(result.housingInitialized());
             assertEquals(expectedHousingResidual, result.housingRawResidual(), TOLERANCE);
