@@ -1,15 +1,17 @@
 package simpaths.model.lifetime_incomes;
 
+import com.opencsv.bean.CsvToBeanBuilder;
+import com.opencsv.bean.StatefulBeanToCsv;
+import com.opencsv.bean.StatefulBeanToCsvBuilder;
+import com.opencsv.exceptions.CsvDataTypeMismatchException;
+import com.opencsv.exceptions.CsvRequiredFieldEmptyException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
-import simpaths.data.CSV.CsvToObjectLoader;
-import simpaths.data.CSV.ObjectToCsvWriter;
 import simpaths.data.Parameters;
 import simpaths.model.enums.Gender;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -37,10 +39,11 @@ public class ManagerProjectLifetimeIncomes {
         RandomGenerator generator = new Random(seed);
 
         // load initialisation values
-        String path = Parameters.getInputDirectory() + "lifetime_incomes" + File.separator + "initialisation_observations.csv";
-        ArrayList<InitialisationObservation> initialisationObservations;
+        List<InitialisationObservation> initialisationObservations;
         try {
-            initialisationObservations = CsvToObjectLoader.loadList(path, InitialisationObservation.class);
+            String path = Parameters.getInputDirectory() + "lifetime_incomes" + File.separator + "initialisation_observations.csv";
+            FileReader fileReader = new FileReader(path);
+            initialisationObservations = new CsvToBeanBuilder(fileReader).withType(InitialisationObservation.class).build().parse();
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Problem reading initialisation observations");
@@ -51,10 +54,11 @@ public class ManagerProjectLifetimeIncomes {
         int initSampleSize = initialisationObservations.size();
 
         // load white noise estimates
-        path = Parameters.getInputDirectory() + "lifetime_incomes" + File.separator + "whitenoise_estimates.csv";
-        ArrayList<WhiteNoiseEstimate> whiteNoiseEstimates;
+        List<WhiteNoiseEstimate> whiteNoiseEstimates;
         try {
-            whiteNoiseEstimates = CsvToObjectLoader.loadList(path, WhiteNoiseEstimate.class);
+            String path = Parameters.getInputDirectory() + "lifetime_incomes" + File.separator + "whitenoise_estimates.csv";
+            FileReader fileReader = new FileReader(path);
+            whiteNoiseEstimates = new CsvToBeanBuilder(fileReader).withType(WhiteNoiseEstimate.class).build().parse();
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Problem reading initialisation observations");
@@ -92,14 +96,20 @@ public class ManagerProjectLifetimeIncomes {
         boolean writeToCSV2 = true;
         if (writeToCSV2) {
 
-            path = outputDir + File.separator + "normalised_incomes.csv";
-            ArrayList<NormalisedIncome> incomes = new ArrayList<>();
+            List<NormalisedIncome> incomes = new ArrayList<>();
             for (TemplateIndividual individual : templateIndividuals) {
 
                 incomes.addAll(individual.getNormIncomes());
             }
             try {
-                ObjectToCsvWriter.write(path, incomes, NormalisedIncome.class);
+                String path = outputDir + File.separator + "normalised_incomes.csv";
+                Writer writer = new FileWriter(path);
+                StatefulBeanToCsv beanToCsv = new StatefulBeanToCsvBuilder(writer).build();
+                beanToCsv.write(incomes);
+                writer.close();
+            } catch (CsvRequiredFieldEmptyException | CsvDataTypeMismatchException e) {
+                // a bean had an empty required field or a value that couldn't be converted
+                System.err.println("Could not write CSV: " + e.getMessage());
             } catch (IOException e) {
                 e.printStackTrace();
                 throw new RuntimeException("Problem reading initialisation observations");
@@ -108,7 +118,6 @@ public class ManagerProjectLifetimeIncomes {
                 throw e;
             }
         }
-
 
         // loop over birth years
         boolean initialised = true;

@@ -1,18 +1,20 @@
 package simpaths.model.lifetime_incomes;
 
+import com.opencsv.bean.CsvBindByName;
+
 /**
  * Class used to store data for initialising fixed effects and
  * z values for the lifetime income model.
  */
 public class WhiteNoiseEstimate {
 
-    public double pidp;         // person id
-    public double etaHat;       // estimated white noise
-    public double age;          // observation age
-    public double weight;       // survey weight
+    @CsvBindByName private double pidp;         // person id
+    @CsvBindByName private double etaHat;       // estimated white noise
+    @CsvBindByName private double age;          // observation age
+    @CsvBindByName private double weight;       // survey weight
 
     // Required by CsvToObjectLoader (reflection-based instantiation).
-    private WhiteNoiseEstimate() {
+    public WhiteNoiseEstimate() {
     }
 
     // Getters and setters.

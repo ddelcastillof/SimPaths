@@ -32,7 +32,7 @@ public class TemplateIndividual {
     public TemplateIndividual(int id, InitialisationObservation obs, long seed) {
         this.id = id;
         fixedEffect = obs.getFixedEffect() * AdjustmentFactors.fixedEffect;
-        NormalisedIncome normIncome = new NormalisedIncome(this, 0, obs.getZ());
+        NormalisedIncome normIncome = new NormalisedIncome(this, 0, obs.getZ() * AdjustmentFactors.normIncomeZero);
         normIncomes.add(normIncome);
         generator = new Random(seed);
     }
@@ -54,4 +54,7 @@ public class TemplateIndividual {
         NormalisedIncome normIncome = new NormalisedIncome(this, age, noise);
         normIncomes.add(normIncome);
     }
+
+    @Override
+    public String toString() {return String.valueOf(id);}
 }
