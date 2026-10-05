@@ -145,6 +145,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
     @NullInitialised @Transient private Boolean yBenReceivedFlag; // Does person receive benefits
     @Column(name="yBenUCReceivedFlag") private Boolean yBenUCReceivedFlag; // Person receives UC
     @Lag(field="yBenUCReceivedFlag") @Transient private Boolean yBenUCReceivedFlagL1;
+    private Boolean supportedEmploymentFlag; // Moved into work by the supported employment programme this year (exported to Person.csv)
     @Column(name="yBenNonUCReceivedFlag") private Boolean yBenNonUCReceivedFlag;  // Person receives a benefit which is not UC
     @Lag(field="yBenNonUCReceivedFlag") @Transient private Boolean yBenNonUCReceivedFlagL1;
     @NullInitialised @Column(name="yLifeTime") private Double yLifeTime;                  // mean annual equivalised household disposable income by age
@@ -522,6 +523,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         yBenNonUCReceivedFlagL1 = originalPerson.yBenNonUCReceivedFlagL1;
         yBenUCReceivedFlag = originalPerson.yBenUCReceivedFlag;
         yBenUCReceivedFlagL1 = originalPerson.yBenUCReceivedFlagL1;
+        supportedEmploymentFlag = originalPerson.supportedEmploymentFlag;
         yFinDstrssFlag = originalPerson.yFinDstrssFlag;
 
         if (originalPerson.labWageFullTimeHrly > Parameters.MIN_HOURLY_WAGE_RATE) {
@@ -2116,6 +2118,21 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         return true;		//Else return true
     }
 
+    // Supported employment intervention: eligible if aged 18-24, UC received last year (own or the parents'
+    // benefit unit's if at 18 yo), not employed last year (labC4), and at risk of work, within the programme window
+    public boolean isSupportedEmploymentEligible() {
+        if (!model.isSupportedEmployment())
+            return false;
+        int year = model.getYear();
+        return year >= model.getSupportedEmploymentStartYear()
+                && year <= model.getSupportedEmploymentEndYear()
+                && demAge >= Parameters.SUPPORTED_EMPLOYMENT_MIN_AGE
+                && demAge <= Parameters.SUPPORTED_EMPLOYMENT_MAX_AGE
+                && isReceivesBenefitsFlagUC_L1()
+                && Les_c4.NotEmployed.equals(labC4L1)
+                && atRiskOfWork();
+    }
+
 
     // Assign education level to school leavers using MultiProbitRegression
     // Note that persons are now assigned a Low education level by default at birth (to prevent null pointer exceptions when persons become old enough to marry while still being a student
@@ -2197,6 +2214,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
                                     // is set to true only when person leaves school in this specific year
         // eduSpellFlag = (Les_c4.Student.equals(labC4)) ? Indicator.True : Indicator.False;
         // no need to update eduSpellFlag as its value is persisted from the previous year
+        supportedEmploymentFlag = false; //reset SE flag to default
 
         if (demAge < Parameters.AGE_TO_BECOME_RESPONSIBLE) {
             Person mother = benefitUnit.getFemale();
@@ -7293,6 +7311,15 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
 
     public void setYBenUCReceivedFlagL1(boolean yBenUCReceivedFlagL1) {
         this.yBenUCReceivedFlagL1 = yBenUCReceivedFlagL1;
+    }
+
+    // assigning supported employment flag and retrieving it from each simulated individual
+    public boolean isSupportedEmploymentFlag() {
+        return Boolean.TRUE.equals(supportedEmploymentFlag);
+    }
+
+    public void setSupportedEmploymentFlag(boolean supportedEmploymentFlag) {
+        this.supportedEmploymentFlag = supportedEmploymentFlag;
     }
 
     public boolean isReceivesBenefitsFlagNonUC() {

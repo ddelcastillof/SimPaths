@@ -293,6 +293,9 @@ public class Parameters {
     public static final int MIN_AGE_SOCIAL_CARE = 65; //Minimum age to receive formal social care
     public static final int MIN_AGE_FLEXIBLE_LABOUR_SUPPLY = 16; //Used when filtering people who can be "flexible in labour supply"
     public static final int MAX_AGE_FLEXIBLE_LABOUR_SUPPLY = 75;
+    public static final int SUPPORTED_EMPLOYMENT_MIN_AGE = 18;     // supported employment programme: youngest eligible age
+    public static final int SUPPORTED_EMPLOYMENT_MAX_AGE = 24;     // supported employment programme: oldest eligible age
+    public static final Labour[] SUPPORTED_EMPLOYMENT_LABOUR_OPTIONS = {Labour.TEN, Labour.TWENTY}; // placement bands for the supported employment scheme
     public static final double SHARE_OF_WEALTH_TO_ANNUITISE_AT_RETIREMENT = 0.25;
     public static final double ANNUITY_RATE_OF_RETURN = 0.015;
     public static AnnuityRates annuityRates;

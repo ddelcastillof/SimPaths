@@ -79,6 +79,14 @@ model_args:
   # --- Labour market modules ---
 #    labourMarketCovid19On: false  # enable reduced-form month-by-month COVID-19 labour market module
                                    # (applies to years 2020–2021 in the baseline parameterisation)
+  # --- Supported employment intervention ---
+  # Ages 18-24, UC received last year (at 18: the parents' benefit unit), not employed last year (labC4).
+  # Eligible persons who would otherwise work zero hours are placed in a <=25h/week band at the model's own wage.
+  # Requires the default labour supply module (no intertemporal optimisation; COVID module off in the window).
+  # Keep alignEmployment off during the programme window.
+#    supportedEmployment: false          # switch the intervention on
+#    supportedEmploymentStartYear: 2025  # first programme year (no placements in the simulation start year)
+#    supportedEmploymentEndYear: 2100    # last programme year
 
   # --- Social care and childcare ---
 #    projectFormalChildcare: true          # simulate formal childcare costs
