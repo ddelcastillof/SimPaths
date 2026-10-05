@@ -207,6 +207,11 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
     @GUIparameter(description = "Scale simulated income by wage growth when imputing taxes and benefits")
     public boolean taxDonorUpratingByWage = false;
 
+    // Supported employment intervention options in config.yml files
+    private boolean supportedEmployment = false;
+    private int supportedEmploymentStartYear = 2025;
+    private int supportedEmploymentEndYear = 2100;
+
     private int ordering = Parameters.MODEL_ORDERING;    //Used in Scheduling of model events.  Schedule model events at the same time as the collector and observer events, but a lower order, so will be fired before the collector and observer have updated.
 
     private Set<Person> persons;
@@ -584,6 +589,11 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
         // needs to be positioned after all decision states for the current period have been simulated
         if (enableIntertemporalOptimisations)
             yearlySchedule.addCollectionEvent(benefitUnits, BenefitUnit.Processes.UpdateStates, false);
+
+        // stop labour supply model if covid module or intertemporal optimisations are on
+        if (supportedEmployment && (enableIntertemporalOptimisations || (labourMarketCovid19On && supportedEmploymentStartYear <= 2021)))
+            throw new IllegalStateException("supportedEmployment requires the default labour supply module: " +
+                    "disable enableIntertemporalOptimisations, and start the programme after 2021 if labourMarketCovid19On is true");
 
         yearlySchedule.addEvent(this, Processes.LabourMarketAndIncomeUpdate);
 
@@ -2834,6 +2844,10 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
     public void setDonorPoolAveraging(boolean val) { donorPoolAveraging = val; }
     public boolean getTaxDonorUpratingByWage() { return taxDonorUpratingByWage; }
     public void setTaxDonorUpratingByWage(boolean val) { taxDonorUpratingByWage = val; }
+    // retrievers for supported employment assignment
+    public boolean isSupportedEmployment() { return supportedEmployment; }
+    public int getSupportedEmploymentStartYear() { return supportedEmploymentStartYear; }
+    public int getSupportedEmploymentEndYear() { return supportedEmploymentEndYear; }
 
     public Integer getPopSize() {
         return popSize;

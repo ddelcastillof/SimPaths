@@ -145,6 +145,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
     @NullInitialised @Transient private Boolean yBenReceivedFlag; // Does person receive benefits
     @Column(name="yBenUCReceivedFlag") private Boolean yBenUCReceivedFlag; // Person receives UC
     @Lag(field="yBenUCReceivedFlag") @Transient private Boolean yBenUCReceivedFlagL1;
+    private Boolean supportedEmploymentFlag; // Moved into work by the supported employment programme this year (exported to Person.csv)
     @Column(name="yBenNonUCReceivedFlag") private Boolean yBenNonUCReceivedFlag;  // Person receives a benefit which is not UC
     @Lag(field="yBenNonUCReceivedFlag") @Transient private Boolean yBenNonUCReceivedFlagL1;
     @NullInitialised @Column(name="yLifeTime") private Double yLifeTime;                  // mean annual equivalised household disposable income by age
@@ -158,7 +159,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
 //	and is estimated, for each individual, on the basis of observable characteristics as
 //	age, education, civil status, number of children, etc. Hence, potential earnings
 //	is a separate process in the simulation, and it is computed for every adult
-//	individual in the simulated population, in each simulated period.
+//	individual in the simulated population, in each simulated period. (EYES HERE DARWIN)
     @Column(name="labWageHrly") private Double labWageFullTimeHrly;		//Is hourly rate.  Initialised with value: ils_earns / (4.34 * lhw), where lhw is the weekly hours a person worked in EUROMOD input data
     @Lag(field="labWageFullTimeHrly") @Column(name="labWageFullTimeHrlyL1") private Double labWageFullTimeHrlyL1; // Lag(1) of potentialHourlyEarnings
     @NullInitialised private Double xEquivYear;
@@ -522,6 +523,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         yBenNonUCReceivedFlagL1 = originalPerson.yBenNonUCReceivedFlagL1;
         yBenUCReceivedFlag = originalPerson.yBenUCReceivedFlag;
         yBenUCReceivedFlagL1 = originalPerson.yBenUCReceivedFlagL1;
+        supportedEmploymentFlag = originalPerson.supportedEmploymentFlag;
         yFinDstrssFlag = originalPerson.yFinDstrssFlag;
 
         if (originalPerson.labWageFullTimeHrly > Parameters.MIN_HOURLY_WAGE_RATE) {
@@ -1112,7 +1114,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
      * Applies separate estimates for Male and Female Persons.
      * Runs <b>after</b> {@link #healthMentalHM1Level()}</p>
      *
-     * @filter Age 25-64
+     * @filter Age 16-64
      * @updates {@code Person.healthWbScore0to36}
      * @see <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/variables/scghq1_dv/">scghq1_dv</a>
      *
@@ -1120,7 +1122,16 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
     protected void healthMentalHM2Level() {
 
         double dhmPrediction;
-        if (demAge >= 25 && demAge < MIN_AGE_SOCIAL_CARE) {
+        if (demAge >= MIN_AGE_TO_HAVE_INCOME && demAge < 25) {
+            if (Gender.Male.equals(getDemMaleFlag())) {
+                dhmPrediction = Parameters.getRegHealthHM2LevelMalesU25().getScore(this, Person.DoublesVariables.class);
+                healthWbScore0to36 = constrainDhmEstimate(dhmPrediction + healthWbScore0to36);
+        } else if (Gender.Female.equals(getDemMaleFlag())) {
+                dhmPrediction = Parameters.getRegHealthHM2LevelFemalesU25().getScore(this, Person.DoublesVariables.class);
+                healthWbScore0to36 = constrainDhmEstimate(dhmPrediction + healthWbScore0to36);
+    } 
+    }
+       else if (demAge >= 25 && demAge < MIN_AGE_SOCIAL_CARE) {
             if (Gender.Male.equals(getDemMaleFlag())) {
                 dhmPrediction = Parameters.getRegHealthHM2LevelMales().getScore(this, Person.DoublesVariables.class);
                 healthWbScore0to36 = constrainDhmEstimate(dhmPrediction+ healthWbScore0to36);
@@ -1185,7 +1196,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
      * Runs <b>before</b> {@link #healthMCS2()}.</p>
      *
      * @filter Age 16+
-     * @updates {@code Person.healthMentalMcs}
+     * @updates {@code Person.healthMentalMcs} START MODIFICATIONS HERE (DARWIN)
      * @see <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/variables/sf12mcs_dv/">sf12mcs_dv</a>
      */
     protected void healthMCS1() {
@@ -1205,14 +1216,23 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
      * Applies separate estimates for Male and Female Persons.
      * Runs <b>after</b> {@link #healthMCS1()}</p>
      *
-     * @filter Age 25-64
+     * @filter Age 16-64
      * @updates {@code Person.healthMentalMcs}
      * @see <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/variables/sf12mcs_dv/">sf12mcs_dv</a>
      */
     protected void healthMCS2() {
 
         double mcsPrediction;
-        if (demAge >= 25 && demAge < MIN_AGE_SOCIAL_CARE) {
+        if (demAge >= MIN_AGE_TO_HAVE_INCOME && demAge < 25) {
+            if (Gender.Male.equals(getDemMaleFlag())) {
+                mcsPrediction = Parameters.getRegHealthMCS2MalesU25().getScore(this, Person.DoublesVariables.class);
+                healthMentalMcs = constrainSF12Estimate(mcsPrediction + healthMentalMcs);
+        } else if (Gender.Female.equals(getDemMaleFlag())) {
+                mcsPrediction = Parameters.getRegHealthMCS2FemalesU25().getScore(this, Person.DoublesVariables.class);
+                healthMentalMcs = constrainSF12Estimate(mcsPrediction + healthMentalMcs);
+        } 
+        }
+        else if (demAge >= 25 && demAge < MIN_AGE_SOCIAL_CARE) {
             if (Gender.Male.equals(getDemMaleFlag())) {
                 mcsPrediction = Parameters.getRegHealthMCS2Males().getScore(this, Person.DoublesVariables.class);
                 healthMentalMcs = constrainSF12Estimate(mcsPrediction + healthMentalMcs);
@@ -1252,14 +1272,23 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
      * Applies separate estimates for Male and Female Persons.
      * Runs <b>after</b> {@link #healthPCS1()}</p>
      *
-     * @filter Age 25-64
+     * @filter Age 16-64
      * @updates {@code Person.healthPhysicalPcs}
      * @see <a href="https://www.understandingsociety.ac.uk/documentation/mainstage/variables/sf12pcs_dv/">sf12pcs_dv</a>
      */
     protected void healthPCS2() {
 
         double pcsPrediction;
-        if (demAge >= 25 && demAge < MIN_AGE_SOCIAL_CARE) {
+        if (demAge >= MIN_AGE_TO_HAVE_INCOME && demAge < 25) {
+            if (Gender.Male.equals(getDemMaleFlag())) {
+                pcsPrediction = Parameters.getRegHealthPCS2MalesU25().getScore(this, Person.DoublesVariables.class);
+                healthPhysicalPcs = constrainSF12Estimate(pcsPrediction + healthPhysicalPcs);
+        } else if (Gender.Female.equals(getDemMaleFlag())) {
+                pcsPrediction = Parameters.getRegHealthPCS2FemalesU25().getScore(this, Person.DoublesVariables.class);
+                healthPhysicalPcs = constrainSF12Estimate(pcsPrediction + healthPhysicalPcs);
+        } 
+        }
+        else if (demAge >= 25 && demAge < MIN_AGE_SOCIAL_CARE) {
             if (Gender.Male.equals(getDemMaleFlag())) {
                 pcsPrediction = Parameters.getRegHealthPCS2Males().getScore(this, Person.DoublesVariables.class);
                 healthPhysicalPcs = constrainSF12Estimate(pcsPrediction + healthPhysicalPcs);
@@ -1854,7 +1883,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         setLabWageFullTimeHrlyL1(upratedLevelPotentialHourlyEarnings);
     }
 
-
+// # WAGE EQUATIONS THAT USES MCS (MODIFY HERE IF NEEDED) DARWIN
     protected void updateFullTimeHourlyEarnings() {
 
         if (demAge < Parameters.MIN_AGE_TO_HAVE_INCOME || demAge > Parameters.MAX_AGE_FLEXIBLE_LABOUR_SUPPLY) {
@@ -2089,6 +2118,21 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         return true;		//Else return true
     }
 
+    // Supported employment intervention: eligible if aged 18-24, UC received last year (own or the parents'
+    // benefit unit's if at 18 yo), not employed last year (labC4), and at risk of work, within the programme window
+    public boolean isSupportedEmploymentEligible() {
+        if (!model.isSupportedEmployment())
+            return false;
+        int year = model.getYear();
+        return year >= model.getSupportedEmploymentStartYear()
+                && year <= model.getSupportedEmploymentEndYear()
+                && demAge >= Parameters.SUPPORTED_EMPLOYMENT_MIN_AGE
+                && demAge <= Parameters.SUPPORTED_EMPLOYMENT_MAX_AGE
+                && isReceivesBenefitsFlagUC_L1()
+                && Les_c4.NotEmployed.equals(labC4L1)
+                && atRiskOfWork();
+    }
+
 
     // Assign education level to school leavers using MultiProbitRegression
     // Note that persons are now assigned a Low education level by default at birth (to prevent null pointer exceptions when persons become old enough to marry while still being a student
@@ -2170,6 +2214,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
                                     // is set to true only when person leaves school in this specific year
         // eduSpellFlag = (Les_c4.Student.equals(labC4)) ? Indicator.True : Indicator.False;
         // no need to update eduSpellFlag as its value is persisted from the previous year
+        supportedEmploymentFlag = false; //reset SE flag to default
 
         if (demAge < Parameters.AGE_TO_BECOME_RESPONSIBLE) {
             Person mother = benefitUnit.getFemale();
@@ -7266,6 +7311,15 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
 
     public void setYBenUCReceivedFlagL1(boolean yBenUCReceivedFlagL1) {
         this.yBenUCReceivedFlagL1 = yBenUCReceivedFlagL1;
+    }
+
+    // assigning supported employment flag and retrieving it from each simulated individual
+    public boolean isSupportedEmploymentFlag() {
+        return Boolean.TRUE.equals(supportedEmploymentFlag);
+    }
+
+    public void setSupportedEmploymentFlag(boolean supportedEmploymentFlag) {
+        this.supportedEmploymentFlag = supportedEmploymentFlag;
     }
 
     public boolean isReceivesBenefitsFlagNonUC() {
