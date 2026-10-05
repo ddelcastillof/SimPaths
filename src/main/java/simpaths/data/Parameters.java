@@ -309,7 +309,7 @@ public class Parameters {
     public static final int MH_POLICY_COHORT_MAX_AGE = 24;           // mental health policy cohort MCS shock: oldest age selected and last age shocked
     public static final double SHARE_OF_WEALTH_TO_ANNUITISE_AT_RETIREMENT = 0.25;
     public static final double ANNUITY_RATE_OF_RETURN = 0.015;
-    public static AnnuityRates annuityRates;
+//    public static AnnuityRates annuityRates;
     public static final int MIN_HOURS_FULL_TIME_EMPLOYED = 25;	// used to distinguish full-demYear from part-demYear employment (needs to be consistent with Labour enum)
     public static final double MIN_HOURLY_WAGE_RATE = 1.5;
     public static final double MAX_HOURLY_WAGE_RATE = 150.0;
