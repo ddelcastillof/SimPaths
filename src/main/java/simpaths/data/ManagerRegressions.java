@@ -558,6 +558,25 @@ public class ManagerRegressions {
         throw new RuntimeException("failed to identify new enumerator for multi-event (3)");
     }
 
+     /**
+     * Position of rand within the probability slice of the option chosen by multiEvent(probs, rand), rescaled to
+     * [0, 1). Uniform conditional on the chosen option, so it can drive a follow-up draw without consuming a new
+     * random number.
+     */
+    public static double multiEventResidual(MultiKeyMap<Labour, Double> probs, MultiKey<? extends Labour> chosen, double rand) {
+
+        double total = 0.0, below = 0.0;
+        int chosenVal = getMultiKeyValue(chosen);
+        for (MultiKey<? extends Labour> key : probs.keySet()) {
+            double prob = probs.get(key);
+            total += prob;
+            if (getMultiKeyValue(key) < chosenVal)
+                below += prob;
+        }
+        double residual = (rand * total - below) / probs.get(chosen);
+        return Math.min(Math.max(residual, 0.0), Math.nextDown(1.0));
+    }
+
     private static int getMultiKeyValue(MultiKey<? extends Labour> ee) {
         int val = 0;
         int fctr = 1;

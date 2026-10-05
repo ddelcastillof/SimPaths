@@ -405,6 +405,7 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
             }
             case ReceivesBenefits -> {
                 setReceivesBenefitsFlag();
+                setReceivesBenefitsFlagUCNonUC(); // calling UC benefits each year
             }
             case UpdateNonPensionWealth -> {
                 updateNonPensionWealth();
@@ -692,6 +693,11 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
             default ->
                 throw new IllegalStateException("Benefit Unit with the following ID has no recognised occupancy: " + getKey().getId());
         }
+        // dependent children inherit the benefit unit's UC status
+        for (Person child : getChildren()) {
+            child.setReceivesBenefitsFlagUC(receivesBenefitsFlagUC);
+            child.setReceivesBenefitsFlagNonUC(receivesLegacyBenefitsFlag);
+        }
     }
 
     /*
@@ -745,6 +751,8 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
             calculateBUIncome();
             demDbMatchTax = evaluatedTransfers.getMatch();
             idtaxDbDonor = demDbMatchTax.getCandidateID();
+            setReceivedUC(evaluatedTransfers.getReceivedUC()); //set UC receipt when nobody is at risk of work
+            setReceivedLegacyBenefits(evaluatedTransfers.getReceivedLegacyBenefit());
         } else {
             throw new RuntimeException("call to evaluate disposable income on assumption of zero risk of employment where there is risk");
         }
@@ -1758,6 +1766,8 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
             // prepare temporary storage variables
             MultiKey<? extends Labour> labourSupplyChoice = null;
             MultiKeyMap<Labour, Match> taxDbMatchByLabourPairs = MultiKeyMap.multiKeyMap(new LinkedMap<>());
+            MultiKeyMap<Labour, Integer> receivedUCByLabourPairs = MultiKeyMap.multiKeyMap(new LinkedMap<>());
+            MultiKeyMap<Labour, Integer> receivedLegacyByLabourPairs = MultiKeyMap.multiKeyMap(new LinkedMap<>());
             LinkedHashSet<MultiKey<Labour>> possibleLabourCombinations = findPossibleLabourCombinations(); // Find possible labour combinations for this benefit unit
             MultiKeyMap<Labour, Double> labourSupplyUtilityRegressionScoresByLabourPairs = MultiKeyMap.multiKeyMap(new LinkedMap<>());
             boolean maleAtRiskOfWork = false, femaleAtRiskOfWork = false;
@@ -1888,6 +1898,7 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
             try {
                 MultiKeyMap<Labour, Double> labourSupplyUtilityRegressionProbabilitiesByLabourPairs = convertRegressionScoresToProbabilities(labourSupplyUtilityRegressionScoresByLabourPairs);
                 labourSupplyChoice = ManagerRegressions.multiEvent(labourSupplyUtilityRegressionProbabilitiesByLabourPairs, labourInnov);
+                labourSupplyChoice = applySupportedEmployment(labourSupplyChoice, labourSupplyUtilityRegressionProbabilitiesByLabourPairs, labourInnov); // call SE module
                 // labourRandomUniform is not updated here to avoid issues with search routine for labour market alignment
             } catch (RuntimeException e) {
                 System.out.print("Could not determine labour supply choice for BU with ID: " + getKey().getId());
@@ -1951,6 +1962,39 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
 
         //Update gross income variables for the household and all occupants:
         calculateBUIncome();
+    }
+
+    /**
+     * Supported employment intervention: if an eligible person drew ZERO hours, redraw their hours among
+     * Parameters.SUPPORTED_EMPLOYMENT_LABOUR_OPTIONS, keeping the partner's drawn hours fixed.
+     * The redraw reuses the original uniform draw, rescaled to the chosen option's probability slice, so no new
+     * random numbers are consumed.
+     */
+    private MultiKey<? extends Labour> applySupportedEmployment(MultiKey<? extends Labour> choice,
+                                                               MultiKeyMap<Labour, Double> probs, double labourInnov) {
+        Person male = getMale();
+        Person female = getFemale();
+        boolean treatMale = male != null && choice.getKey(0) == Labour.ZERO && male.isSupportedEmploymentEligible();
+        boolean treatFemale = female != null && choice.getKey(1) == Labour.ZERO && female.isSupportedEmploymentEligible();
+        if (!treatMale && !treatFemale)
+            return choice;
+
+        List<Labour> options = List.of(Parameters.SUPPORTED_EMPLOYMENT_LABOUR_OPTIONS);
+        MultiKeyMap<Labour, Double> subset = MultiKeyMap.multiKeyMap(new LinkedMap<>());
+        for (MultiKey<? extends Labour> key : probs.keySet()) {
+            boolean maleOk = treatMale ? options.contains(key.getKey(0)) : key.getKey(0) == choice.getKey(0);
+            boolean femaleOk = treatFemale ? options.contains(key.getKey(1)) : key.getKey(1) == choice.getKey(1);
+            if (maleOk && femaleOk)
+                subset.put(key, probs.get(key));
+        }
+        if (subset.isEmpty())
+            return choice;
+
+        double residualInnov = ManagerRegressions.multiEventResidual(probs, choice, labourInnov);
+        MultiKey<? extends Labour> newChoice = ManagerRegressions.multiEvent(subset, residualInnov);
+        if (treatMale) male.setSupportedEmploymentFlag(true);
+        if (treatFemale) female.setSupportedEmploymentFlag(true);
+        return newChoice;
     }
 
     private MultiKeyMap<Labour, Double> convertRegressionScoresToProbabilities(MultiKeyMap<Labour, Double> regressionScoresMap) {

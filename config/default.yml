@@ -79,6 +79,23 @@ model_args:
   # --- Labour market modules ---
 #    labourMarketCovid19On: false  # enable reduced-form month-by-month COVID-19 labour market module
                                    # (applies to years 2020–2021 in the baseline parameterisation)
+  # --- Supported employment intervention ---
+  # Ages 18-24, UC received last year (at 18: the parents' benefit unit), not employed last year (labC4).
+  # Eligible persons who would otherwise work zero hours are placed in a <=25h/week band at the model's own wage.
+  # Requires the default labour supply module (no intertemporal optimisation; COVID module off in the window).
+  # Keep alignEmployment off during the programme window.
+#    supportedEmployment: false          # switch the intervention on
+#    supportedEmploymentStartYear: 2025  # first programme year (no placements in the simulation start year)
+#    supportedEmploymentEndYear: 2100    # last programme year
+
+  # --- Policy cohort MCS shock ---
+  # In MHpolicyCohortStartYear, flags everyone aged 18-24 who received UC last year (MHpolicyCohortFlag in Person.csv).
+  # Each year while a member is aged <= 24, policyCohortMcsShock is added to their SF-12 MCS score after step 2.
+  # Set MHpolicyCohort: true in BOTH the baseline (shock 0.0) and the policy run, with the same seed,
+  # so both runs flag the same people.
+#    MHpolicyCohort: false             # select and flag the cohort
+#    MHpolicyCohortStartYear: 2025     # cohort year; must be after startYear and no later than endYear
+#    policyCohortMcsShock: 0.0       # MCS points added per year (e.g. -2.0); 0.0 = baseline
 
   # --- Social care and childcare ---
 #    projectFormalChildcare: true          # simulate formal childcare costs
