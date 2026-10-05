@@ -1256,10 +1256,10 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         double dhmPrediction;
         if (demAge >= MIN_AGE_TO_HAVE_INCOME && demAge < 25) {
             if (Gender.Male.equals(getDemMaleFlag())) {
-                dhmPrediction = Parameters.getRegHealthHM2LevelMalesU25().getScore(this, Person.DoublesVariables.class);
+                dhmPrediction = Parameters.getRegHealthHM2LevelMalesU25().getScore(this, Person.Variables.class);
                 healthWbScore0to36 = constrainDhmEstimate(dhmPrediction + healthWbScore0to36);
         } else if (Gender.Female.equals(getDemMaleFlag())) {
-                dhmPrediction = Parameters.getRegHealthHM2LevelFemalesU25().getScore(this, Person.DoublesVariables.class);
+                dhmPrediction = Parameters.getRegHealthHM2LevelFemalesU25().getScore(this, Person.Variables.class);
                 healthWbScore0to36 = constrainDhmEstimate(dhmPrediction + healthWbScore0to36);
     } 
     }
@@ -1361,10 +1361,10 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         double mcsPrediction;
         if (demAge >= MIN_AGE_TO_HAVE_INCOME && demAge < 25) {
             if (Gender.Male.equals(getDemMaleFlag())) {
-                mcsPrediction = Parameters.getRegHealthMCS2MalesU25().getScore(this, Person.DoublesVariables.class);
+                mcsPrediction = Parameters.getRegHealthMCS2MalesU25().getScore(this, Person.Variables.class);
                 healthMentalMcs = constrainSF12Estimate(mcsPrediction + healthMentalMcs);
         } else if (Gender.Female.equals(getDemMaleFlag())) {
-                mcsPrediction = Parameters.getRegHealthMCS2FemalesU25().getScore(this, Person.DoublesVariables.class);
+                mcsPrediction = Parameters.getRegHealthMCS2FemalesU25().getScore(this, Person.Variables.class);
                 healthMentalMcs = constrainSF12Estimate(mcsPrediction + healthMentalMcs);
         } 
         }
@@ -1433,10 +1433,10 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         double pcsPrediction;
         if (demAge >= MIN_AGE_TO_HAVE_INCOME && demAge < 25) {
             if (Gender.Male.equals(getDemMaleFlag())) {
-                pcsPrediction = Parameters.getRegHealthPCS2MalesU25().getScore(this, Person.DoublesVariables.class);
+                pcsPrediction = Parameters.getRegHealthPCS2MalesU25().getScore(this, Person.Variables.class);
                 healthPhysicalPcs = constrainSF12Estimate(pcsPrediction + healthPhysicalPcs);
         } else if (Gender.Female.equals(getDemMaleFlag())) {
-                pcsPrediction = Parameters.getRegHealthPCS2FemalesU25().getScore(this, Person.DoublesVariables.class);
+                pcsPrediction = Parameters.getRegHealthPCS2FemalesU25().getScore(this, Person.Variables.class);
                 healthPhysicalPcs = constrainSF12Estimate(pcsPrediction + healthPhysicalPcs);
         } 
         }
