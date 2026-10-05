@@ -146,6 +146,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
     @Column(name="yBenUCReceivedFlag") private Boolean yBenUCReceivedFlag; // Person receives UC
     @Lag(field="yBenUCReceivedFlag") @Transient private Boolean yBenUCReceivedFlagL1;
     private Boolean supportedEmploymentFlag; // Moved into work by the supported employment programme this year (exported to Person.csv)
+    private Boolean MHpolicyCohortFlag = false; // In the MH policy cohort: aged 18-24 with UC last year in MHpolicyCohortStartYear (permanent)
     @Column(name="yBenNonUCReceivedFlag") private Boolean yBenNonUCReceivedFlag;  // Person receives a benefit which is not UC
     @Lag(field="yBenNonUCReceivedFlag") @Transient private Boolean yBenNonUCReceivedFlagL1;
     @NullInitialised @Column(name="yLifeTime") private Double yLifeTime;                  // mean annual equivalised household disposable income by age
@@ -524,6 +525,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         yBenUCReceivedFlag = originalPerson.yBenUCReceivedFlag;
         yBenUCReceivedFlagL1 = originalPerson.yBenUCReceivedFlagL1;
         supportedEmploymentFlag = originalPerson.supportedEmploymentFlag;
+        // MHpolicyCohortFlag is deliberately not copied, e.g. immigrants added by population alignment are never cohort members
         yFinDstrssFlag = originalPerson.yFinDstrssFlag;
 
         if (originalPerson.labWageFullTimeHrly > Parameters.MIN_HOURLY_WAGE_RATE) {
@@ -781,6 +783,7 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         HealthMentalHM2Case,		//Case-based prediction for psychological distress, Step 2
         HealthMCS1,
         HealthMCS2,
+        PolicyCohortMcsShock,       //Policy cohort: add the MCS shock after step 2 (scheduled only if MHpolicyCohort is on)
         HealthPCS1,
         HealthPCS2,
         LifeSatisfaction1,
@@ -863,6 +866,9 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
             }
             case HealthMCS2 -> {
                 healthMCS2();
+            }
+            case PolicyCohortMcsShock -> {
+                policyCohortMcsShock();
             }
             case HealthPCS1 -> {
                 healthPCS1();
@@ -1243,6 +1249,22 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
         } else if (healthMentalMcs != null) {
             healthMentalMcs = constrainSF12Estimate(healthMentalMcs);
         }
+    }
+
+    /**
+     * Policy cohort MCS shock
+     *
+     * <p>Adds {@code SimPathsModel.policyCohortMcsShock} to the MCS score ({@code healthMentalMcs}) of policy cohort
+     * members, each year while they are aged {@link Parameters#MH_POLICY_COHORT_MAX_AGE} or younger.
+     * Runs <b>after</b> {@link #healthMCS2()}, so the shock carries into later years through {@code Dhe_mcs_L1}.</p>
+     *
+     * @filter Policy cohort members aged 24 or younger
+     * @updates {@code Person.healthMentalMcs}
+     */
+    protected void policyCohortMcsShock() {
+
+        if (isMHPolicyCohortFlag() && demAge <= Parameters.MH_POLICY_COHORT_MAX_AGE && healthMentalMcs != null)
+            healthMentalMcs = constrainSF12Estimate(healthMentalMcs + model.getPolicyCohortMcsShock());
     }
 
     /**
@@ -7320,6 +7342,14 @@ public class Person implements EventListener, IDoubleSource, IIntSource, Weight,
 
     public void setSupportedEmploymentFlag(boolean supportedEmploymentFlag) {
         this.supportedEmploymentFlag = supportedEmploymentFlag;
+    }
+
+    public boolean isMHPolicyCohortFlag() {
+        return Boolean.TRUE.equals(MHpolicyCohortFlag);
+    }
+
+    public void setMHPolicyCohortFlag(boolean MHpolicyCohortFlag) {
+        this.MHpolicyCohortFlag = MHpolicyCohortFlag;
     }
 
     public boolean isReceivesBenefitsFlagNonUC() {

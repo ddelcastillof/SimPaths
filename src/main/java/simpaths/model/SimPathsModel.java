@@ -212,6 +212,11 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
     private int supportedEmploymentStartYear = 2025;
     private int supportedEmploymentEndYear = 2100;
 
+    // Policy cohort MCS shock (set via model_args in the YAML config; no GUI)
+    private boolean MHpolicyCohort = false;       // select and flag the treatment cohort; set true in BOTH the baseline and the policy run
+    private int MHpolicyCohortStartYear = 2025;   // year the cohort is selected and the shock starts; must be after startYear
+    private double policyCohortMcsShock = 0.0;  // SF-12 MCS points added each year while a member is aged <= 24 (0.0 in the baseline)
+
     private int ordering = Parameters.MODEL_ORDERING;    //Used in Scheduling of model events.  Schedule model events at the same time as the collector and observer events, but a lower order, so will be fired before the collector and observer have updated.
 
     private Set<Person> persons;
@@ -518,6 +523,15 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
 
         yearlySchedule.addCollectionEvent(persons, Person.Processes.Aging);
 
+        // Policy cohort MCS shock: flag the treatment cohort once, at the start of MHpolicyCohortStartYear (after Aging, using
+        // last year's UC flag). yearlySchedule starts at startYear + 1, so the cohort year must be later than startYear.
+        if (MHpolicyCohort) {
+            if (MHpolicyCohortStartYear <= startYear || MHpolicyCohortStartYear > endYear)
+                throw new IllegalStateException("MHpolicyCohortStartYear (" + MHpolicyCohortStartYear +
+                        ") must be later than startYear and no later than endYear");
+            yearlySchedule.addEvent(this, Processes.SelectMHPolicyCohort);
+        }
+
         // Health Alignment - redrawing alignment used adjust state of individuals to projections by Gender and Age
         //Turned off for now as health determined below based on individual characteristics
         //yearlySchedule.addEvent(this, Processes.HealthAlignment);
@@ -627,6 +641,8 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
         yearlySchedule.addCollectionEvent(persons, Person.Processes.HealthPCS1); //Step 1 of mental health
         yearlySchedule.addCollectionEvent(persons, Person.Processes.LifeSatisfaction1); //Step 1 of mental health
         yearlySchedule.addCollectionEvent(persons, Person.Processes.HealthMCS2);
+        if (MHpolicyCohort)
+            yearlySchedule.addCollectionEvent(persons, Person.Processes.PolicyCohortMcsShock);  // policy cohort MCS shock, after step 2
         yearlySchedule.addCollectionEvent(persons, Person.Processes.HealthPCS2);
         yearlySchedule.addCollectionEvent(persons, Person.Processes.LifeSatisfaction2);
 
@@ -832,6 +848,7 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
         CheckForEmptyBenefitUnits,
         GarbageCollection,
         CheckForImperfectTaxDBMatches,
+        SelectMHPolicyCohort,
         CleanUp,
     }
 
@@ -956,6 +973,11 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
                 if (Parameters.saveImperfectTaxDBMatches)
                     DatabaseExtension.extendInputData(getEngine().getCurrentExperiment().getOutputFolder());
             }
+            // event case for MH Policy
+            case SelectMHPolicyCohort -> {
+                selectMHPolicyCohort();
+            }
+
             default -> {
                 throw new RuntimeException("failed to identify process type in SimPathsModel.onEvent");
             }
@@ -1904,7 +1926,27 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
         }
     }
 
+    /*
+    Policy cohort MCS shock: in MHpolicyCohortStartYear only, flag every person aged MH_POLICY_COHORT_MIN_AGE to
+    MH_POLICY_COHORT_MAX_AGE who received UC last year. Runs after Aging, so ages are this year's. Membership is permanent.
+    No random numbers are used, so a baseline run (shock 0) and a policy run with the same seed select the same persons.
+     */
+    private void selectMHPolicyCohort() {
 
+        if (year != MHpolicyCohortStartYear)
+            return;
+        int cohortSize = 0;
+        for (Person person : persons) {
+            if (person.getDemAge() >= Parameters.MH_POLICY_COHORT_MIN_AGE
+                    && person.getDemAge() <= Parameters.MH_POLICY_COHORT_MAX_AGE
+                    && person.isReceivesBenefitsFlagUC_L1()) {
+                person.setMHPolicyCohortFlag(true);
+                cohortSize++;
+            }
+        }
+        System.out.println("Policy cohort selected in " + year + ": " + cohortSize + " persons");
+    }
+    
     /*
     Private helper method used to set up alignment for different occupancy types
      */
@@ -2848,6 +2890,10 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
     public boolean isSupportedEmployment() { return supportedEmployment; }
     public int getSupportedEmploymentStartYear() { return supportedEmploymentStartYear; }
     public int getSupportedEmploymentEndYear() { return supportedEmploymentEndYear; }
+    // retrievers for MH policy assignment
+    public boolean isMHPolicyCohort() { return MHpolicyCohort; }
+    public int getMHPolicyCohortStartYear() { return MHpolicyCohortStartYear; }
+    public double getPolicyCohortMcsShock() { return policyCohortMcsShock; }
 
     public Integer getPopSize() {
         return popSize;

@@ -88,6 +88,15 @@ model_args:
 #    supportedEmploymentStartYear: 2025  # first programme year (no placements in the simulation start year)
 #    supportedEmploymentEndYear: 2100    # last programme year
 
+  # --- Policy cohort MCS shock ---
+  # In MHpolicyCohortStartYear, flags everyone aged 18-24 who received UC last year (MHpolicyCohortFlag in Person.csv).
+  # Each year while a member is aged <= 24, policyCohortMcsShock is added to their SF-12 MCS score after step 2.
+  # Set MHpolicyCohort: true in BOTH the baseline (shock 0.0) and the policy run, with the same seed,
+  # so both runs flag the same people.
+#    MHpolicyCohort: false             # select and flag the cohort
+#    MHpolicyCohortStartYear: 2025     # cohort year; must be after startYear and no later than endYear
+#    policyCohortMcsShock: 0.0       # MCS points added per year (e.g. -2.0); 0.0 = baseline
+
   # --- Social care and childcare ---
 #    projectFormalChildcare: true          # simulate formal childcare costs
 #    projectSocialCare: true               # simulate social care receipt and provision module

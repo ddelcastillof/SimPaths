@@ -296,6 +296,8 @@ public class Parameters {
     public static final int SUPPORTED_EMPLOYMENT_MIN_AGE = 18;     // supported employment programme: youngest eligible age
     public static final int SUPPORTED_EMPLOYMENT_MAX_AGE = 24;     // supported employment programme: oldest eligible age
     public static final Labour[] SUPPORTED_EMPLOYMENT_LABOUR_OPTIONS = {Labour.TEN, Labour.TWENTY}; // placement bands for the supported employment scheme
+    public static final int MH_POLICY_COHORT_MIN_AGE = 18;           // mental health policy cohort MCS shock: youngest age selected
+    public static final int MH_POLICY_COHORT_MAX_AGE = 24;           // mental health policy cohort MCS shock: oldest age selected and last age shocked
     public static final double SHARE_OF_WEALTH_TO_ANNUITISE_AT_RETIREMENT = 0.25;
     public static final double ANNUITY_RATE_OF_RETURN = 0.015;
     public static AnnuityRates annuityRates;

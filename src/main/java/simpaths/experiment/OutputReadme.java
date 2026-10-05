@@ -148,6 +148,9 @@ public class OutputReadme {
         out.println("| Alignment: cohabitation | " + onOff(model.isAlignCohabitation()) + " |");
         out.println("| Alignment: in school | " + onOff(model.isAlignInSchool()) + " |");
         out.println("| Alignment: employment | " + onOff(model.isAlignEmployment()) + " |");
+        out.println("| Policy cohort MCS shock | " + (model.isMHPolicyCohort()
+                ? "on (cohort year " + model.getMHPolicyCohortStartYear() + ", shock " + model.getPolicyCohortMcsShock() + " MCS points/year)"
+                : "off") + " |");
         out.println();
         out.println("Diagnostics for the alignment routines that ran are in `AlignmentStatistics.csv`,");
         out.println("which reports the adjustment factor, the simulated share and the target share each year.");
