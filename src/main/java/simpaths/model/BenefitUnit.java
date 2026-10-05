@@ -1858,6 +1858,8 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
                 }
 
                 taxDbMatchByLabourPairs.put(labourKey, evaluatedTransfers.getMatch());
+                receivedUCByLabourPairs.put(labourKey, evaluatedTransfers.getReceivedUC());
+                receivedLegacyByLabourPairs.put(labourKey, evaluatedTransfers.getReceivedLegacyBenefit());
                 labourSupplyUtilityRegressionScoresByLabourPairs.put(labourKey, regressionScore); //XXX: Adult children could contribute their income to the hh, but then utility would have to be joint for a household with adult children, and they couldn't be treated separately as they are at the moment?
             }
             if (labourSupplyUtilityRegressionScoresByLabourPairs.isEmpty()) {
@@ -1948,8 +1950,9 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
             yDispMonth = evaluatedTransfers.getDisposableIncomePerMonth();
             yBenAmountMonth = evaluatedTransfers.getBenefitsReceivedPerMonth();
             yGrossMonth = evaluatedTransfers.getGrossIncomePerMonth();
-            yBenUCReceivedFlag = evaluatedTransfers.getReceivedUC();
-            yBenLegacyReceivedFlag = evaluatedTransfers.getReceivedLegacyBenefit();
+            yBenUCReceivedFlag = receivedUCByLabourPairs.get(labourSupplyChoice);
+            yBenLegacyReceivedFlag = receivedLegacyByLabourPairs.get(labourSupplyChoice);
+
 
             // allow for formal childcare costs
             if (Parameters.flagFormalChildcare && !Parameters.flagSuppressChildcareCosts) {
