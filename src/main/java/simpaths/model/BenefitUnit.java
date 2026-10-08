@@ -405,8 +405,7 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
                 homeownership();
             }
             case ReceivesBenefits -> {
-                setReceivesBenefitsFlag();
-                setReceivesBenefitsFlagUCNonUC(); // calling UC benefits each year
+                setReceivesBenefitsFlag(); // calling UC benefits each year
             }
             case ReceivesBenefitsUC -> {
                 setReceivesBenefitsFlagUCNonUC(); // updates UCFlag each year
