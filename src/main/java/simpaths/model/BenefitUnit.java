@@ -366,6 +366,7 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
         CalculateChangeInEDI, //Calculate change in equivalised disposable income
         Homeownership,
         ReceivesBenefits,
+        ReceivesBenefitsUC,
         UpdatePensionWealth,
         UpdateNonPensionWealth,
         UpdateHousingWealth,
@@ -406,6 +407,9 @@ public class BenefitUnit implements EventListener, IDoubleSource, Weight, Compar
             case ReceivesBenefits -> {
                 setReceivesBenefitsFlag();
                 setReceivesBenefitsFlagUCNonUC(); // calling UC benefits each year
+            }
+            case ReceivesBenefitsUC -> {
+                setReceivesBenefitsFlagUCNonUC(); // updates UCFlag each year
             }
             case UpdateNonPensionWealth -> {
                 updateNonPensionWealth();

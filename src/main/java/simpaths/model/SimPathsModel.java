@@ -621,7 +621,8 @@ public class SimPathsModel extends AbstractSimulationManager implements EventLis
         yearlySchedule.addEvent(this, Processes.LabourMarketUpdate);
 
         // Assign benefit status to individuals in benefit units, from donors. Based on donor tax unit status.
-        yearlySchedule.addCollectionEvent(benefitUnits, BenefitUnit.Processes.ReceivesBenefits);
+        yearlySchedule.addCollectionEvent(benefitUnits, BenefitUnit.Processes.ReceivesBenefits); // any benefits flags
+        yearlySchedule.addCollectionEvent(benefitUnits, BenefitUnit.Processes.ReceivesBenefitsUC); // UC benefits
 
         // Accumulate pension wealth stocks after final income is settled.
         if (Parameters.projectPensionWealth) {
