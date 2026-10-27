@@ -127,7 +127,7 @@ public class SimPathsMultiRun extends MultiRun {
 		data[0][1] = startYear;
 		XLSXfileWriter.createXLSX(Parameters.INPUT_DIRECTORY, Parameters.DatabaseCountryYearFilename, "Data", columnNames, data);
 
-		if (!Parameters.bootstrapAll) System.out.println("WARNING: Bootstrapping is disabled. Enabling bootstrapping for multiruns is recommented for analytical runs.");
+		if (!Parameters.bootstrapAll) System.out.println("WARNING: Bootstrapping is disabled. Enabling bootstrapping for multiruns is recommended for analytical runs.");
 
 		if (flagDatabaseSetup) {
 
