@@ -81,6 +81,8 @@ public class SimPathsMultiRun extends MultiRun {
 
 		multiRunMode = true;
 
+		Parameters.bootstrapAll = true;
+
 		// process Yaml config file
 		if (!parseYamlConfig(args)) {
 			// if parseYamlConfig returns false (indicating bad filename passed), exit main
@@ -124,6 +126,8 @@ public class SimPathsMultiRun extends MultiRun {
 		data[0][0] = country.toString();
 		data[0][1] = startYear;
 		XLSXfileWriter.createXLSX(Parameters.INPUT_DIRECTORY, Parameters.DatabaseCountryYearFilename, "Data", columnNames, data);
+
+		if (!Parameters.bootstrapAll) System.out.println("WARNING: Bootstrapping is disabled. Enabling bootstrapping for multiruns is recommended for analytical runs.");
 
 		if (flagDatabaseSetup) {
 
@@ -209,6 +213,14 @@ public class SimPathsMultiRun extends MultiRun {
 		Option fileOption = new Option("f", "Output to file");
 		options.addOption(fileOption);
 
+		Option bootstrapOption = Option.builder()
+			.longOpt("bootstrap")
+			.hasArg()
+			.optionalArg(true)
+			.desc("Enable bootstrapping of regression coefficients (defaults to 'true')")
+			.build();
+		options.addOption(bootstrapOption);
+
 		Option persistRoot = new Option("P", "persist", true,
 				"Write and read processed database to root or run-specific database. Accepted arguments:" +
 				"\n - root: persist to root output folder (input/)" +
@@ -253,6 +265,16 @@ public class SimPathsMultiRun extends MultiRun {
 
 			if (cmd.hasOption("DBSetup")) {
 				flagDatabaseSetup = true;
+			}
+
+			if (cmd.hasOption("bootstrap")) {
+				String bootstrapValue = cmd.getOptionValue("bootstrap");
+
+				if (null == bootstrapValue) {
+					Parameters.bootstrapAll = true;	
+				} else {
+					Parameters.bootstrapAll = Boolean.parseBoolean(bootstrapValue);
+				}
 			}
 
 			if (cmd.hasOption("p")) {
